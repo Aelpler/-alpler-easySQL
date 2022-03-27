@@ -13,7 +13,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Aelpler/-alpler-logger.git"
+    "url": "git+https://github.com/Aelpler/-alpler-easySQL"
   },
   "keywords": [
     "Älpler",
@@ -27,9 +27,9 @@
   "author": "älpler",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Aelpler/-alpler-logger/issues"
+    "url": "https://github.com/Aelpler/-alpler-easySQL/issues"
   },
-  "homepage": "https://github.com/Aelpler/-alpler-logger/#readme",
+  "homepage": "https://github.com/Aelpler/-alpler-easySQL/#readme",
   "devDependencies": {
     "@types/node": "^17.0.21"
   }
