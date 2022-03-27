@@ -1,0 +1,36 @@
+{
+  "name": "@alpler/easysql",
+  "version": "0.0.1",
+  "description": "For all those who hate SQL cause it never works on first try",
+  "main": "index.js",
+  "types": "./src/@types/index.d.ts",
+  "dependencies": {
+    "@alpler/logger": "^1.2.4",
+    "mysql": "^2.18.1"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Aelpler/-alpler-logger.git"
+  },
+  "keywords": [
+    "Älpler",
+    "aelpler",
+    "@alpler",
+    "alpler",
+    "alplercc",
+    "@alpler/easysql",
+    "easysql"
+  ],
+  "author": "älpler",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Aelpler/-alpler-logger/issues"
+  },
+  "homepage": "https://github.com/Aelpler/-alpler-logger/#readme",
+  "devDependencies": {
+    "@types/node": "^17.0.21"
+  }
+}
