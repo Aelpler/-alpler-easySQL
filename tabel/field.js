@@ -19,13 +19,15 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.FieldIndex = exports.FieldAttribute = exports.FieldType = exports.Field = void 0;
+exports.FieldIndex = exports.FieldType = exports.Field = void 0;
 const logger = __importStar(require("@alpler/logger"));
 /** Default Length for all the fields where the length was not set */
 let defaultLength = 150;
 class Field {
     constructor(name, type) {
-        this._notNull = false;
+        // Read bellow at class FieldAttribute for more info
+        // private _attribute: FieldAttribute
+        this._notNull = true;
         this._autoIncrement = false;
         this._name = name;
         this._type = type;
@@ -43,9 +45,10 @@ class Field {
     set default(def) {
         this._default = def;
     }
+    /* Read bellow at class FieldAttribute for more info
     set attribute(attribute) {
-        this._attribute = attribute;
-    }
+        this._attribute = attribute
+    }*/
     set notNull(notNull) {
         this._notNull = notNull;
     }
@@ -75,9 +78,10 @@ class Field {
     get default() {
         return this._default;
     }
+    /* Read bellow at class FieldAttribute for more info
     get attribute() {
-        return this._attribute;
-    }
+        return this._attribute
+    }*/
     get notNull() {
         return this._notNull;
     }
@@ -115,17 +119,17 @@ class Field {
         if (this.type.extraAttributeNeeded) {
             if (!this._length || !isNaN(Number(this._length))) {
                 logger.log(logger.LogLevel.FATAL, "@alpler/easySQL/field.ts:getSQL()", `No extra attribute was given, but was needed at ${this.name} ${this.type.name}`);
-                return `No extra attribute was given, but was needed at ${this.name} ${this.type.name}`;
+                return { result: undefined, error: Error(`No extra attribute was given, but was needed at ${this.name} ${this.type.name}`) };
             }
         }
         if (this._length)
             result += `(${this._length})`;
+        /* Read bellow at class FieldAttribute for more info
+        if (this.attribute)
+            result += ` ${this.attribute}`
+        */
         if (this.autoIncrement)
             result += " AUTO_INCREMENT";
-        if (this.attribute)
-            result += ` ${this.attribute}`;
-        if (this.index)
-            result += ` ${this.index}`;
         if (this.notNull) {
             result += " NOT NULL";
         }
@@ -133,9 +137,17 @@ class Field {
             result += ` NOT NULL DEFAULT '${this.default}'`;
         else
             result += " NULL";
+        if (this.index)
+            result += ` ${this.index}`;
         if (this.comment)
             result += ` COMMENT '${this.comment}'`;
-        return result;
+        /** Checks for Syntax errors */
+        /** If field is index it can not be null */
+        if (this.index && !this.notNull) {
+            logger.log(logger.LogLevel.FATAL, "@alpler/easySQL/field.ts:getSQL()", `${this.name} ${this.type.name} is ${this.index} it can not be null`);
+            return { result: undefined, error: Error(`${this.name} ${this.type.name} is ${this.index} it can not be null`) };
+        }
+        return { result: result, error: undefined };
     }
 }
 exports.Field = Field;
@@ -196,16 +208,20 @@ FieldType.MULTILINESTRING = new FieldType('MULTILINESTRING', false, false);
 FieldType.MULTIPOLYGON = new FieldType('MULTIPOLYGON', false, false);
 FieldType.GEOMETRYCOLLECTION = new FieldType('GEOMETRYCOLLECTION', false, false);
 FieldType.JSON = new FieldType('JSON', false, false);
-var FieldAttribute;
-(function (FieldAttribute) {
-    FieldAttribute["BINARY"] = "BINARY";
-    FieldAttribute["UNSIGEND"] = "UNSIGNED";
-    FieldAttribute["UNSIGNED_ZEROFILL"] = "UNSIGNED ZEROFILL";
-    FieldAttribute["ON_UPDATE_CURRENT_TIMESTAMP"] = "ON UPDATE CURRENT_TIMESTAMP";
-})(FieldAttribute = exports.FieldAttribute || (exports.FieldAttribute = {}));
+/**
+ * Removed untill I know why binary can only be in somepleases
+ * Don't have enough time to search for this if anyone needs it pls
+ * message me and I will impliment it again
+ */
+/*
+export enum FieldAttribute {
+    BINARY = "BINARY", UNSIGEND = "UNSIGNED",
+    UNSIGNED_ZEROFILL = "UNSIGNED ZEROFILL",
+    ON_UPDATE_CURRENT_TIMESTAMP = "ON UPDATE CURRENT_TIMESTAMP"
+}*/
 var FieldIndex;
 (function (FieldIndex) {
-    FieldIndex["PRIMARY"] = "PRIMARY";
+    FieldIndex["PRIMARY"] = "PRIMARY KEY";
     FieldIndex["UNIQUE"] = "UNIQUE";
     FieldIndex["INDEX"] = "INDEX";
     FieldIndex["FULLTEXT"] = "FULLTEXT";

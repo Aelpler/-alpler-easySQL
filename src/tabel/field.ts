@@ -11,8 +11,9 @@ export class Field {
     private _type: FieldType
     private _length: string
     private _default: string
-    private _attribute: FieldAttribute
-    private _notNull: boolean = false
+    // Read bellow at class FieldAttribute for more info
+    // private _attribute: FieldAttribute
+    private _notNull: boolean = true
     private _index: FieldIndex
     private _autoIncrement: boolean = false
     private _comment: string
@@ -39,9 +40,10 @@ export class Field {
         this._default = def
     }
 
+    /* Read bellow at class FieldAttribute for more info
     set attribute(attribute) {
         this._attribute = attribute
-    }
+    }*/
 
     set notNull(notNull) {
         this._notNull = notNull
@@ -81,9 +83,10 @@ export class Field {
         return this._default
     }
 
+    /* Read bellow at class FieldAttribute for more info
     get attribute() {
         return this._attribute
-    }
+    }*/
 
     get notNull() {
         return this._notNull
@@ -111,7 +114,7 @@ export class Field {
      * returns Field as SQL code
      * example: id INT AUTO_INCREMENT PRIMARY KEY NOT NULL
      */
-    getSQL(): string {
+    getSQL(): { result: string, error: Error } {
 
         let result: string = `${this.name} ${this.type.name}`
 
@@ -130,21 +133,20 @@ export class Field {
         if (this.type.extraAttributeNeeded) {
             if (!this._length || !isNaN(Number(this._length))) {
                 logger.log(logger.LogLevel.FATAL, "@alpler/easySQL/field.ts:getSQL()", `No extra attribute was given, but was needed at ${this.name} ${this.type.name}`)
-                return `No extra attribute was given, but was needed at ${this.name} ${this.type.name}`
+                return { result: undefined, error: Error(`No extra attribute was given, but was needed at ${this.name} ${this.type.name}`) }
             }
         }
 
         if (this._length)
             result += `(${this._length})`
 
-        if (this.autoIncrement)
-            result += " AUTO_INCREMENT"
-
+        /* Read bellow at class FieldAttribute for more info
         if (this.attribute)
             result += ` ${this.attribute}`
+        */
 
-        if (this.index)
-            result += ` ${this.index}`
+        if (this.autoIncrement)
+            result += " AUTO_INCREMENT"
 
         if (this.notNull) {
             result += " NOT NULL"
@@ -153,10 +155,23 @@ export class Field {
         else
             result += " NULL"
 
+        if (this.index)
+            result += ` ${this.index}`
+
         if (this.comment)
             result += ` COMMENT '${this.comment}'`
 
-        return result
+
+        /** Checks for Syntax errors */
+
+        /** If field is index it can not be null */
+        if (this.index && !this.notNull) {
+            logger.log(logger.LogLevel.FATAL, "@alpler/easySQL/field.ts:getSQL()", `${this.name} ${this.type.name} is ${this.index} it can not be null`)
+            return { result: undefined, error: Error(`${this.name} ${this.type.name} is ${this.index} it can not be null`) }
+        }
+
+
+        return { result: result, error: undefined }
     }
 }
 
@@ -226,15 +241,21 @@ export class FieldType {
 
 }
 
+/** 
+ * Removed untill I know why binary can only be in somepleases
+ * Don't have enough time to search for this if anyone needs it pls
+ * message me and I will impliment it again
+ */
+/*
 export enum FieldAttribute {
     BINARY = "BINARY", UNSIGEND = "UNSIGNED",
     UNSIGNED_ZEROFILL = "UNSIGNED ZEROFILL",
     ON_UPDATE_CURRENT_TIMESTAMP = "ON UPDATE CURRENT_TIMESTAMP"
-}
+}*/
 
 export enum FieldIndex {
 
-    PRIMARY = "PRIMARY", UNIQUE = "UNIQUE",
+    PRIMARY = "PRIMARY KEY", UNIQUE = "UNIQUE",
     INDEX = "INDEX", FULLTEXT = "FULLTEXT",
     SPATIAL = "SPATIAL"
 

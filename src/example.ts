@@ -1,10 +1,14 @@
-import { Field, FieldAttribute, FieldIndex, FieldType } from "./tabel/field"
+import { Database } from "./tabel/database"
+import { Field, FieldIndex, FieldType } from "./tabel/field"
+import { Table } from "./tabel/table"
 
-let field = new Field("id", FieldType.VARCHAR)
-field.length = 22
-field.attribute = FieldAttribute.BINARY
+
+let database = new Database("bernd")
+let table = database.createTable("Bernde")
+let field = table.createField("field", FieldType.INT)
 field.autoIncrement = true
-field.default = "22"
 field.index = FieldIndex.PRIMARY
 
-console.log(field.getSQL())
+let be = new Field("be", FieldType.TEXT)
+
+console.log(database.getSQL().result)

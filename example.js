@@ -1,10 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const database_1 = require("./tabel/database");
 const field_1 = require("./tabel/field");
-let field = new field_1.Field("id", field_1.FieldType.VARCHAR);
-field.length = 22;
-field.attribute = field_1.FieldAttribute.BINARY;
+let database = new database_1.Database("bernd");
+let table = database.createTable("Bernde");
+let field = table.createField("field", field_1.FieldType.INT);
 field.autoIncrement = true;
-field.default = "22";
 field.index = field_1.FieldIndex.PRIMARY;
-console.log(field.getSQL());
+let be = new field_1.Field("be", field_1.FieldType.TEXT);
+console.log(database.getSQL().result);
